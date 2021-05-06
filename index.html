@@ -1,0 +1,18 @@
+<html>
+<!-- Tampere stylesheets etc. not included here as this is purely for demostration purpose -->
+<body>
+<!-- This is an example HTML page that demostrates the use if iframes in embedding reports from Power BI Report Server -->
+<h1>Upotetaan dashboardeja!</h1>
+<!-- Here we create a one row, two column table, where each cell will embed a 800x600 pixel iframe that displays a specific report  -->
+<!-- In this example the whole dashboard is embedded as default, there is an option to make it go to the desired page right away -->
+<table>
+  <tr>
+    <td><b>Maahanmuuttajainfo Mainio kehitys</b><br>
+	<iframe width="800" height="600" style="border:1px solid black;" src="https://SERVER_URL_HERE/FOLDER_PATH_HERE/Maahanmuuttajainfo%20Mainio%20kehitys?rs:embed=true" frameborder="0" allowFullScreen="true"></iframe>
+	</td>
+    <td><b>Tyomarkkinatuen kuntaosuuslaskutus TRE 2008-2019 analyysi BU 20201012</b><br>
+	<iframe width="800" height="600" style="border:1px solid black;" src="https://SERVER_URL_HERE/FOLDER_PATH_HERE/Tyomarkkinatuen%20kuntaosuuslaskutus%20TRE%202008-2019%20analyysi%20BU%2020201012?rs:embed=true" frameborder="0" allowFullScreen="true"></iframe>
+	</td>
+  </tr>
+</body>
+</html>
