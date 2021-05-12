@@ -10,6 +10,11 @@ suppressMessages(library(jsonlite))
 suppressMessages(library(DBI))
 suppressMessages(library(odbc))
 
+
+
+########### Create a dataframe containing report name, page names, table names and column names for each pbix-file ########### 
+
+
 # Get all pbix-files from a specified folder (example: pbi_files folder), which is not in the git repository, adjust the path as needed
 files <- list.files(path="../pbi_files", pattern="*.pbix", full.names=TRUE, recursive=FALSE)
 
@@ -81,11 +86,72 @@ df <- data.frame(report_name, page_name, table_name, field_name)
 
 #Remove duplicates (if the same field is used multiple times in a report page)
 df <- df[!duplicated(df), ]
-df
 
-#Write dataframe into database
-conn <- dbConnect(odbc::odbc(),driver="SQL Server", server = "fiaisql01p", database = 'tykas')
+
+
+
+########### Create an aggregated table for the "all-content search field ########### 
+
+
+#Initialize empty dataframe for results
+df_aggr <- select(df, report_name)
+
+#Initialize sub-dataframes for the analysis and insert them into a list. Here we have one dataframe for each field (page, table, field)
+df_page <- select(df, report_name, page_name)
+df_table <- select(df, report_name, table_name)
+df_field <- select(df, report_name, field_name)
+dfList <- list(df_page, df_table, df_field)
+
+#Loop through the list of one-field dataframes to aggregate their values and to remove duplicates
+for (x in dfList) {
+  
+  x <- x[!duplicated(x), ]
+  
+  #Here we concatenate values from multiple rows into one string, where the initial row values are separated by comma
+  if (colnames(x)[2] == 'page_name') {
+    x <- x %>% 
+      group_by(report_name) %>% 
+      mutate(page_name_string = paste0(page_name, collapse = ","))
+  }
+  if (colnames(x)[2] == 'table_name') {
+    x <- x %>% 
+      group_by(report_name) %>% 
+      mutate(table_name_string = paste0(table_name, collapse = ","))
+  }
+  if (colnames(x)[2] == 'field_name') {
+    x <- x %>% 
+      group_by(report_name) %>% 
+      mutate(field_name_string = paste0(field_name, collapse = ","))
+  }
+  
+  x <- select(x, report_name, colnames(x)[3])
+  x <- x[!duplicated(x), ]
+  
+  # Join the looped dataframe into the result dataframe and move to the next one-field dataframe
+  df_aggr <- merge(df_aggr, x, by = "report_name")
+}
+
+# Remove duplicates, concatenate fields and select the final fields for the result dataframe
+df_aggr <- df_aggr[!duplicated(df_aggr), ]
+df_aggr$content <- paste(df_aggr$page_name, df_aggr$table_name, df_aggr$field_name, sep = ",")
+df_aggr$all <- paste(df_aggr$report_name, df_aggr$content, sep = ",")
+df_search <- select(df_aggr, report_name, all)
+
+
+
+
+########### Write dataframes into SQL-Server database ########### 
+
+
+#Replace your own database parameters (server name, database name, table name) here:
+
+#Write df into "report_data" -table
+conn <- dbConnect(odbc::odbc(),driver="SQL Server", server = "YOUR SERVER NAME", database = 'YOUR DB NAME')
 dbWriteTable(conn, "report_data", df, encoding='UTF-8', overwrite=TRUE)
+
+#Write df_search into "report_ContentSearch" -table
+conn <- dbConnect(odbc::odbc(),driver="SQL Server", server = "YOUR SERVER NAME", database = 'YOUR DB NAME')
+dbWriteTable(conn, "report_ContentSearch", df_search, encoding='UTF-8', overwrite=TRUE)
 
 
 
