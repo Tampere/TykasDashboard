@@ -4,8 +4,11 @@ sys.source("../env_config.r")
 # Print system path
 getwd()
 
-# Call package pbixr
+# Call packages
 suppressMessages(library(pbixr))
+suppressMessages(library(jsonlite))
+suppressMessages(library(DBI))
+suppressMessages(library(odbc))
 
 # Get all pbix-files from a specified folder (example: pbi_files folder), which is not in the git repository, adjust the path as needed
 files <- list.files(path="../pbi_files", pattern="*.pbix", full.names=TRUE, recursive=FALSE)
@@ -80,6 +83,9 @@ df <- data.frame(report_name, page_name, table_name, field_name)
 df <- df[!duplicated(df), ]
 df
 
+#Write dataframe into database
+conn <- dbConnect(odbc::odbc(),driver="SQL Server", server = "fiaisql01p", database = 'tykas')
+dbWriteTable(conn, "report_data", df, encoding='UTF-8', overwrite=TRUE)
 
 
 
