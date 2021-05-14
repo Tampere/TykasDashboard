@@ -1,0 +1,93 @@
+
+PS C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps> .\extract_pbx_from_server.ps1 TREPOWERBIDB.tre.t.verkko trepowerbidb C:\tmp\reports
+New-Object : Cannot create type. Only core types are supported in this language mode.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:44 char:
+8
++ $con = New-Object Data.SqlClient.SqlConnection;
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : PermissionDenied: (:) [New-Object], PSNotSupportedException
+    + FullyQualifiedErrorId : CannotCreateTypeConstrainedLanguage,Microsoft.PowerShell.Commands.NewObjectCommand
+
+The property 'ConnectionString' cannot be found on this object. Verify that the property exists and can be set.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:45 char:
+1
++ $con.ConnectionString = "Data Source=$server;Initial Catalog=$databas ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : PropertyNotFound
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:46 char:
+1
++ $con.Open();
++ ~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+2021-05-14-10:53:04: Started ...
+New-Object : Cannot create type. Only core types are supported in this language mode.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:51 char:
+8
++ $cmd = New-Object Data.SqlClient.SqlCommand $sql, $con;
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : PermissionDenied: (:) [New-Object], PSNotSupportedException
+    + FullyQualifiedErrorId : CannotCreateTypeConstrainedLanguage,Microsoft.PowerShell.Commands.NewObjectCommand
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:52 char:
+1
++ $rd = $cmd.ExecuteReader();
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+Cannot invoke method. Method invocation is supported only on core types in this language mode.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:54 char:
+1
++ $invalids = [System.IO.Path]::GetInvalidFileNameChars();
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : MethodInvocationNotSupportedInConstrainedLanguage
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:56 char:
+8
++ While ($rd.Read())
++        ~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:111 char
+:1
++ $rd.Close();
++ ~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:112 char
+:1
++ $cmd.Dispose();
++ ~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:113 char
+:1
++ $con.Close();
++ ~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+You cannot call a method on a null-valued expression.
+At C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps\extract_pbx_from_server.ps1:114 char
+:1
++ $con.Dispose();
++ ~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+2021-05-14-10:53:05: Finished
+PS C:\Users\jussiniu\OneDrive - Tampereen seutu\My_Documents\Git\TykasDashboard\ps>
