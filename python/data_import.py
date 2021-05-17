@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
-# Requirements: pyjstat, sqlalchemy, pyodbc, json, requests, pandas, numpy
+# Requirements: pyjstat, sqlalchemy, pyodbc, json, requests, iterdools, pandas, numpy, statsmodels
 """
 Created on Thu May  6 14:12:31 2021
 """
 from pyjstat import pyjstat
 import json
 import requests
+import itertools
 import sqlalchemy as sal
 import pandas as pd
 import numpy as np
+import statsmodels.api as sm
+
 
 
 # Getting environment information from one level up
@@ -345,6 +348,187 @@ while i < 51:
   i += 1
 
 tulokset = pd.concat(tulokset)
+
+
+#Use ARIMA to predict migration amount
+
+
+nettomuutto_suomi_historia=muutto_suomessa.loc[( muutto_suomessa['Tiedot']=="Kuntien välinen nettomuutto") & 	( muutto_suomessa['Ikä']=="Yhteensä") ].copy()
+nettomuutto_suomi_historia.Vuosi=pd.to_datetime(nettomuutto_suomi_historia.Vuosi, format='%Y')
+nettomuutto_suomi_historia = nettomuutto_suomi_historia.set_index('Vuosi')
+
+
+y = nettomuutto_suomi_historia['value']
+
+
+#Find optimal hyperparameter value for ARIMA
+
+p = d = q = range(0, 3)
+pdq = list(itertools.product(p, d, q))
+parameters = []
+for param in pdq:
+    try:
+        model = sm.tsa.statespace.SARIMAX(y,method='css',
+                                        order=param,
+                                        enforce_stationarity=False,
+                                        enforce_invertibility=False)
+        results = model.fit()
+    except:
+        continue
+    aic = results.aic
+    parameters.append([param,aic])
+result_table = pd.DataFrame(parameters)
+result_table.columns = ['parameters','aic']
+    # sorting in ascending order, the lower AIC is - the better
+result_table = result_table.sort_values(by='aic', ascending=True).reset_index(drop=True)
+
+
+#Fit best model
+
+mod = sm.tsa.statespace.SARIMAX(y,
+                                order=result_table["parameters"][0],                          
+                                enforce_stationarity=False,
+                                enforce_invertibility=False)
+
+results = mod.fit()
+
+print(results.summary().tables[1])
+
+#Plot Model Diagnostics
+results.plot_diagnostics(figsize=(16, 8))
+
+#Plot predicted one step ahead vs observed
+pred = results.get_prediction(start=pd.to_datetime('2000-01-01'), dynamic=False)
+ax = y['1990':].plot(label='observed')
+pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
+
+
+# Forecast next steps and save results
+pred_uc = results.get_forecast(steps=80)
+pred_ci = pred_uc.conf_int()
+
+ax = y.plot(label='observed', figsize=(14, 7))
+pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
+ax.fill_between(pred_ci.index,
+                pred_ci.iloc[:, 0],
+                pred_ci.iloc[:, 1], color='k', alpha=.25)
+ax.set_xlabel('Date')
+ax.set_ylabel('Forecasted Migration')
+
+aikasarjaennuste=pred_uc.predicted_mean.to_frame()
+aikasarjaennuste.reset_index(inplace=True)
+aikasarjaennuste['Vuosi']=pd.DatetimeIndex(aikasarjaennuste['index']).year
+
+aikasarjaennuste_suomi=aikasarjaennuste.copy()
+aikasarjaennuste_suomi['Kieli']='suomi'
+aikasarjaennuste_suomi['nettomuuttosumma']=aikasarjaennuste_suomi['predicted_mean']*0.995
+
+aikasarjaennuste_ruotsi=aikasarjaennuste.copy()
+aikasarjaennuste_ruotsi['Kieli']='ruotsi'
+aikasarjaennuste_ruotsi['nettomuuttosumma']=aikasarjaennuste_suomi['predicted_mean']*0.005
+
+
+
+# Repeat same steps time series forecasting steps for international migration
+
+#Use ARIMA to predict migration amount
+
+
+nettomaahanmuutto_historia=maahanmuutto.loc[( maahanmuutto['Tiedot']=="Nettomaahanmuutto") & 	( maahanmuutto['Ikä']=="Yhteensä")  & 	( maahanmuutto['Sukupuoli']=="Yhteensä") ].copy()
+nettomaahanmuutto_historia.Vuosi=pd.to_datetime(nettomaahanmuutto_historia.Vuosi, format='%Y')
+nettomaahanmuutto_historia = nettomaahanmuutto_historia.set_index('Vuosi')
+
+
+y = nettomaahanmuutto_historia['value']
+
+
+#Find optimal hyperparameter value for ARIMA
+
+p = d = q = range(0, 3)
+pdq = list(itertools.product(p, d, q))
+parameters = []
+for param in pdq:
+    try:
+        model = sm.tsa.statespace.SARIMAX(y,method='css',
+                                        order=param,
+                                        enforce_stationarity=False,
+                                        enforce_invertibility=False)
+        results = model.fit()
+    except:
+        continue
+    aic = results.aic
+    parameters.append([param,aic])
+result_table = pd.DataFrame(parameters)
+result_table.columns = ['parameters','aic']
+    # sorting in ascending order, the lower AIC is - the better
+result_table = result_table.sort_values(by='aic', ascending=True).reset_index(drop=True)
+
+
+#Fit best model
+
+mod = sm.tsa.statespace.SARIMAX(y,
+                                order=result_table["parameters"][0],                          
+                                enforce_stationarity=False,
+                                enforce_invertibility=False)
+
+results = mod.fit()
+
+print(results.summary().tables[1])
+
+#Plot Model Diagnostics
+results.plot_diagnostics(figsize=(16, 8))
+
+#Plot predicted one step ahead vs observed
+pred = results.get_prediction(start=pd.to_datetime('2000-01-01'), dynamic=False)
+ax = y['1990':].plot(label='observed')
+pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
+
+
+# Forecast next steps and save results
+pred_uc = results.get_forecast(steps=80)
+pred_ci = pred_uc.conf_int()
+
+ax = y.plot(label='observed', figsize=(14, 7))
+pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
+ax.fill_between(pred_ci.index,
+                pred_ci.iloc[:, 0],
+                pred_ci.iloc[:, 1], color='k', alpha=.25)
+ax.set_xlabel('Date')
+ax.set_ylabel('Forecasted Migration')
+
+aikasarjaennuste_vieraskieliset=pred_uc.predicted_mean.to_frame()
+aikasarjaennuste_vieraskieliset.reset_index(inplace=True)
+aikasarjaennuste_vieraskieliset['Vuosi']=pd.DatetimeIndex(aikasarjaennuste_vieraskieliset['index']).year
+aikasarjaennuste_vieraskieliset['Kieli']='VIERASKIELISET YHTEENSÄ'
+aikasarjaennuste_vieraskieliset['nettomuuttosumma']=aikasarjaennuste_vieraskieliset['predicted_mean']
+
+muutto_maara_aikasarja=aikasarjaennuste_suomi.append(aikasarjaennuste_vieraskieliset).append(aikasarjaennuste_ruotsi)
+muutto_maara_aikasarja=muutto_maara_aikasarja[["Kieli", "Vuosi","nettomuuttosumma"]]
+
+
+
+
+#WIP repeat the whole calculation using time series forecast as migration amount
+
+
+
+tulokset_aikasarja = []
+valitulos=lahtodata
+
+i = 1
+while i < 51:
+  valitulos=calculate_next_population(lahtodata=valitulos,kuolleisuus=kuolleisuus, tarkennettu_syntyvyys=tarkennettu_syntyvyys,muutto_osuus=muutto_osuus,muutto_maara=muutto_maara_aikasarja )
+  tulokset_aikasarja.append(valitulos)
+  i += 1
+
+#tulokset_aikasarja = pd.concat(tulokset)
+
+
+
+
+
+
+
 
 # Write to db
 
