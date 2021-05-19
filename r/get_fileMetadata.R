@@ -12,6 +12,7 @@ suppressMessages(library(odbc))
 
 
 
+
 ########### Create a dataframe containing report name, page names, table names and column names for each pbix-file ########### 
 
 
@@ -37,7 +38,7 @@ for(file in files) {
   
   #Use pbixr-library to find report page names
   visual_containers <- json_sect$displayName
-  page_names <- unlist(strsplit(visual_containers,split='.', fixed=TRUE))
+  page_names <- unlist(visual_containers)
   
   #Create a list of report page json-objects
   page_json_list <-json_sect$visualContainers
@@ -64,8 +65,27 @@ for(file in files) {
         
         if (grepl("singleVisual.prototypeQuery.Select.Name", name, fixed = FALSE) == TRUE) {
           
-          #Parse result strings into corresponding result lists
-          result <- sub("\\).*", "", sub(".*\\(", "", content_list[name]))
+          #Here we manually remove PowerBI-field aggregation abbreviations from the fronts of the field names
+          if (substr(content_list[name], 0, 4) == "Sum("
+              | substr(content_list[name], 0, 4) == "Min("
+              | substr(content_list[name], 0, 4) == "Max(")
+          {
+            result <- substr(content_list[name], 5, nchar(content_list[name]))
+            result <- substr(result, 0, nchar(result)-1)
+          } 
+          else if (substr(content_list[name], 0, 13) == "CountNonNull(") {
+            result <- substr(content_list[name], 14, nchar(content_list[name]))
+            result <- substr(result, 0, nchar(result)-1)
+          } 
+          else if (substr(content_list[name], 0, 5) == "Count(") {
+            result <- substr(content_list[name], 6, nchar(content_list[name]))
+            result <- substr(result, 0, nchar(result)-1)
+          }
+          else {
+            result <- content_list[name]
+          }
+          
+          #Insert result strings into corresponding result lists
           values <- unlist(strsplit(result,split='.', fixed=TRUE))
           table_name[[length(table_name) + 1]] <- values[1]
           field_name[[length(field_name) + 1]] <- values[2]
