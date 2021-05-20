@@ -16,7 +16,8 @@
       GetSqlBinary: http://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqldatareader.getsqlbinary.aspx
    .EXAMPLE
       From PowerShell, with script execution rights (set them with Set-ExecutionPolicy command in PowerShell if necessary), execute
-	  .\extract_pbx_from_server.ps1 "MYSQLSERVER.mydomain.fi" "ReportServer" "C:\Temp\report_files\"   
+	  .\extract_pbx_from_server.ps1 "MYSQLSERVER.mydomain.fi" "ReportServer" "C:\Temp\report_files\"
+      Make sure you have the folder referred as existing folder.	  
    
 #>
 
@@ -36,7 +37,7 @@ $sql = "SELECT	CT.[Path]
         FROM dbo.[Catalog] AS CT
 		LEFT OUTER JOIN dbo.CatalogItemExtendedContent cc
 			ON ct.ItemID = cc.ItemId
-        WHERE CT.[Type] IN (2, 8, 5,13) AND CT.[Path] like '%Sandbox%'
+        WHERE CT.[Type] IN (2, 8, 5,13) 
 	    AND ISNULL(cc.ContentType,'CatalogItem') = 'CatalogItem'";		
  #       WHERE CT.[Type] IN (8)";
 

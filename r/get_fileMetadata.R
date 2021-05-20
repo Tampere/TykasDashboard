@@ -12,7 +12,6 @@ suppressMessages(library(odbc))
 
 
 
-
 ########### Create a dataframe containing report name, page names, table names and column names for each pbix-file ########### 
 
 
@@ -66,6 +65,7 @@ for(file in files) {
         if (grepl("singleVisual.prototypeQuery.Select.Name", name, fixed = FALSE) == TRUE) {
           
           #Here we manually remove PowerBI-field aggregation abbreviations from the fronts of the field names
+          #NOTE! There might be more aggregation abbreviations that are not yet here. You can add them similarly as the others below:
           if (substr(content_list[name], 0, 4) == "Sum("
               | substr(content_list[name], 0, 4) == "Min("
               | substr(content_list[name], 0, 4) == "Max(")
@@ -77,8 +77,8 @@ for(file in files) {
             result <- substr(content_list[name], 14, nchar(content_list[name]))
             result <- substr(result, 0, nchar(result)-1)
           } 
-          else if (substr(content_list[name], 0, 5) == "Count(") {
-            result <- substr(content_list[name], 6, nchar(content_list[name]))
+          else if (substr(content_list[name], 0, 6) == "Count(") {
+            result <- substr(content_list[name], 7, nchar(content_list[name]))
             result <- substr(result, 0, nchar(result)-1)
           }
           else {
@@ -90,8 +90,10 @@ for(file in files) {
           table_name[[length(table_name) + 1]] <- values[1]
           field_name[[length(field_name) + 1]] <- values[2]
           page_name[[length(page_name) + 1]] <- page_names[page]
-
-          filename <- basename(file)
+          
+          #The PowerShell-script which fetches the pbix-files uses "@" as folder path separator. Here we replace "@" with "/" and remove the file extension
+          RS_path_name <- basename(file)
+          filename <- gsub("@", "/", RS_path_name)
           filename_without_extension <- substr(filename, 1, nchar(filename)-5)
           report_name[[length(report_name) + 1]] <- filename_without_extension
           
@@ -167,7 +169,7 @@ df_search <- select(df_aggr, report_name, all)
 
 #Write df into "report_data" -table
 conn <- dbConnect(odbc::odbc(),driver="SQL Server", server = "YOUR SERVER NAME", database = 'YOUR DB NAME')
-dbWriteTable(conn, "report_data", df, encoding='UTF-8', overwrite=TRUE)
+dbWriteTable(conn, "report_metadata", df, encoding='UTF-8', overwrite=TRUE)
 
 #Write df_search into "report_ContentSearch" -table
 conn <- dbConnect(odbc::odbc(),driver="SQL Server", server = "YOUR SERVER NAME", database = 'YOUR DB NAME')

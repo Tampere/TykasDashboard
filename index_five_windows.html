@@ -7,32 +7,30 @@
       <h1>Upotetaan dashboardeja!</h1>
       <!-- Here we create a one row, two column table, where each cell will embed a 800x600 pixel iframe that displays a specific report  -->
       <!-- In this example the whole dashboard is embedded as default, there is an option to make it go to the desired page right away -->
+	  <!-- For BI Dashboard prefiltering, see https://docs.microsoft.com/en-us/power-bi/collaborate-share/service-url-filters -->
       <table>
 	   <tr>
 		<td><b>Työttömyysasteen kehitys Tampereen kaupunkiseuduittain</b><br>
-            <iframe width="500" height="400" style="border:1px solid black;" src="https://app.powerbi.com/view?r=eyJrIjoiYWZiOGQwZWEtNmQ2Yi00YjBiLWE3ZTUtNDE4ZGUwZDllYjY2IiwidCI6ImRkZTVkYzEyLWJkM2MtNGMwNi04NWNjLTM0MzYxZWZlOWFkNCIsImMiOjh9&pageName=ReportSection237a49936077180b310f" frameborder="0" allowFullScreen="true"></iframe>
+            <iframe width="600" height="400" style="border:1px solid black;" src="https://app.powerbi.com/view?r=eyJrIjoiYWZiOGQwZWEtNmQ2Yi00YjBiLWE3ZTUtNDE4ZGUwZDllYjY2IiwidCI6ImRkZTVkYzEyLWJkM2MtNGMwNi04NWNjLTM0MzYxZWZlOWFkNCIsImMiOjh9&pageName=ReportSection237a49936077180b310f" frameborder="0" allowFullScreen="true"></iframe>
 		</td>
 		<td><b>Maahanmuuttajainfo Mainio kehitys</b><br>
-         <iframe width="500" height="400" style="border:1px solid black;" src="http://trepowerbidb/reports/powerbi/Tampere/Muuttajarakenne?rs:embed=true" frameborder="0" allowFullScreen="true"></iframe>
+         <iframe width="600" height="400" style="border:1px solid black;" src="http://trepowerbidb/reports/powerbi/Tampere/Muuttajarakenne?rs:embed=true" frameborder="0" allowFullScreen="true"></iframe>
+		 <!-- For example here the above URL address could be like the next row if in the dashboard we would select to pre-filter based on COLUMNNAME in table TABLENAME so that values of COLUMNNAME must be less than 1000 -->
+		 <!-- src="http://trepowerbidb/reports/powerbi/Tampere/Muuttajarakenne?rs:embed=true&filter=TABLENAME/COLUMNNAME lt 1000" -->
         </td>
 		</tr>
 		<tr>
         <td><b>Työttömyyden lajit Tampereella</b><br>
-            <iframe width="500" height="400" style="border:1px solid black;" src="https://app.powerbi.com/view?r=eyJrIjoiYWZiOGQwZWEtNmQ2Yi00YjBiLWE3ZTUtNDE4ZGUwZDllYjY2IiwidCI6ImRkZTVkYzEyLWJkM2MtNGMwNi04NWNjLTM0MzYxZWZlOWFkNCIsImMiOjh9&pageName=ReportSection72315a6d01bd3e0a090e" frameborder="0" allowFullScreen="true"></iframe>
+            <iframe width="600" height="400" style="border:1px solid black;" src="https://app.powerbi.com/view?r=eyJrIjoiYWZiOGQwZWEtNmQ2Yi00YjBiLWE3ZTUtNDE4ZGUwZDllYjY2IiwidCI6ImRkZTVkYzEyLWJkM2MtNGMwNi04NWNjLTM0MzYxZWZlOWFkNCIsImMiOjh9&pageName=ReportSection72315a6d01bd3e0a090e" frameborder="0" allowFullScreen="true"></iframe>
 		 </td>
         <td><b>Tampere.fi</b><br>
-            <iframe width="500" height="400" style="border:1px solid black;" src="http://tampere.fi/" frameborder="0" allowFullScreen="true"></iframe>
+            <iframe width="600" height="400" style="border:1px solid black;" src="http://tampere.fi/" frameborder="0" allowFullScreen="true"></iframe>
 		 </td>		 
 		 </tr>
-
-		 
-	  
-	  
-		 
-	 </table>
-   	<table>
-         <td>
-	      <div class='tableauPlaceholder' id='viz1620968639409' width="100" height="100">
+</table>
+<table>		 
+	 <tr><td><b>Tableaukin upotettuna</b><br>
+   	      <div class='tableauPlaceholder' id='viz1620968639409' width="100" height="100">
             <noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ve&#47;Vestjavestnmuutokset&#47;Ulkomaalaisetjavieraskieliset&#47;1_rss.png' style='border: none' /></a></noscript>
             <object class='tableauViz'  style='display:none;'>
                <param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' />
@@ -50,9 +48,16 @@
                <param name='language' value='en' />
             </object>
          </div>
-         <script type='text/javascript'>                    var divElement = document.getElementById('viz1620968639409');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='1024px';vizElement.style.height='700px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>		
-         </td>
-
-		 </table>
+		 <!-- Script as style.width and style.height parameters which may need to be increased a bit to avoid scrolling, depends on the original Tableau dashboard -->
+         <script type='text/javascript'>                    
+		 var divElement = document.getElementById('viz1620968639409');                    
+		 var vizElement = divElement.getElementsByTagName('object')[0];		 
+		 vizElement.style.width='1100px';vizElement.style.height='750px';                   
+		 var scriptElement = document.createElement('script');
+		 scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+		 vizElement.parentNode.insertBefore(scriptElement, vizElement);  
+		 </script>		
+       </td></tr>
+	</table>
    </body>
 </html>

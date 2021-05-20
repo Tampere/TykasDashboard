@@ -510,7 +510,7 @@ muutto_maara_aikasarja=muutto_maara_aikasarja[["Kieli", "Vuosi","nettomuuttosumm
 
 
 
-#WIP repeat the whole calculation using time series forecast as migration amount
+#repeat the whole calculation using time series forecast as migration amount
 
 
 
