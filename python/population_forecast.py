@@ -507,8 +507,12 @@ aikasarjaennuste_vieraskieliset['nettomuuttosumma']=aikasarjaennuste_vieraskieli
 muutto_maara_aikasarja=aikasarjaennuste_suomi.append(aikasarjaennuste_vieraskieliset).append(aikasarjaennuste_ruotsi)
 muutto_maara_aikasarja=muutto_maara_aikasarja[["Kieli", "Vuosi","nettomuuttosumma"]]
 
-
-
+#Export prediction interval
+aikasarjaennuste_vieraskieliset_export=pred_uc.predicted_mean.to_frame()
+aikasarjaennuste_vieraskieliset_export=aikasarjaennuste_vieraskieliset_export.merge(pred_ci, left_index=True, right_index=True)
+aikasarjaennuste_vieraskieliset_export=pd.concat([y.to_frame(),aikasarjaennuste_vieraskieliset_export])
+aikasarjaennuste_vieraskieliset_export.index.names = ['Vuosi']
+aikasarjaennuste_vieraskieliset_export.rename(columns = {'value' : 'Nettomuutto'}, inplace = True)
 
 #repeat the whole calculation using time series forecast as migration amount
 
@@ -859,9 +863,13 @@ tulokset.to_sql("vaestoennuste",engine,if_exists="replace",method="multi",chunks
 tulokset_aikasarja.to_sql("vaestoennuste_aikasarja",engine,if_exists="replace",method="multi",chunksize=200,index=False)
 tulokset_validointi.to_sql("vaestoennuste_validointi",engine,if_exists="replace",method="multi",chunksize=200,index=False)
 vaestohistoria.to_sql("vaestohistoria",engine,if_exists="replace",method="multi",chunksize=200,index=False)
+aikasarjaennuste_vieraskieliset_export.to_sql("aikasarjaennuste_export",engine,if_exists="replace",method="multi",chunksize=200)
 
 
 #tulokset.to_csv("vaestoennuste.csv")
 #tulokset_aikasarja.to_csv("vaestoennuste_aikasarja.csv")
 #tulokset_validointi.to_csv("vaestoennuste_validointi.csv")
 #vaestohistoria.to_csv("vaestohistoria.csv")
+#aikasarjaennuste_vieraskieliset_export.to_csv("aikasarjaennuste_export.csv")
+
+
